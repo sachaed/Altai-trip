@@ -91,6 +91,7 @@ html[lang="fa"] .brand { font-family: 'Vazirmatn', sans-serif; font-style: norma
   transition: all .2s;
   white-space: nowrap;
 }
+.tab > * { pointer-events: none; }
 html[lang="fa"] .tab { font-family: 'Vazirmatn', sans-serif; font-size: 14px; }
 .tab:hover { color: var(--accent); }
 .tab.active {
@@ -1120,6 +1121,7 @@ html[lang="fa"] .story-status { font-family: 'Vazirmatn', sans-serif; font-style
   opacity: 0;
   transition: opacity .25s;
   border-radius: inherit;
+  pointer-events: none;
 }
 .tab:hover::before { opacity: 1; }
 .tab.active::before { opacity: 0; }
