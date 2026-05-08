@@ -11,12 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
 
 <style>
 :root {
@@ -934,6 +930,266 @@ html[lang="fa"] .footer-mark { font-family: 'Vazirmatn', sans-serif; font-style:
 }
 
 [data-lang]:not(.active) { display: none; }
+
+/* ===== MAPBOX OVERRIDES ===== */
+.mapboxgl-popup-content {
+  font-family: 'Fraunces', serif !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border-radius: 4px !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 12px 32px -8px rgba(42,31,20,.35) !important;
+}
+html[lang="fa"] .mapboxgl-popup-content { font-family: 'Vazirmatn', sans-serif !important; direction: rtl; text-align: right; }
+.mapboxgl-popup-tip { border-top-color: var(--paper) !important; border-bottom-color: var(--paper) !important; }
+.mapboxgl-popup-close-button {
+  font-size: 18px !important;
+  color: var(--ink-faint) !important;
+  padding: 4px 8px !important;
+}
+
+/* Custom marker */
+.altai-marker {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  color: var(--paper);
+  border: 2.5px solid var(--paper);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(42,31,20,.4);
+  transition: transform .2s;
+}
+.altai-marker:hover { transform: scale(1.15); }
+
+/* ===== TREASURE GAME ===== */
+.game-section {
+  padding: 60px 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(192,138,61,.06) 50%, transparent 100%);
+}
+.game-intro {
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 16px;
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
+}
+html[lang="fa"] .game-intro { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+.game-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+html[lang="fa"] .game-progress { font-family: 'Vazirmatn', sans-serif; }
+.game-progress-bar {
+  width: 200px;
+  height: 6px;
+  background: rgba(42,31,20,.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.game-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  width: 0%;
+  transition: width .5s ease;
+  border-radius: 999px;
+}
+.game-progress-text strong {
+  color: var(--accent);
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 18px;
+}
+html[lang="fa"] .game-progress-text strong { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+
+.game-board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  border: 1px solid var(--rule-strong);
+  background: linear-gradient(135deg, #2a4a55 0%, #1f3a44 50%, #2a3540 100%);
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 30px 60px -30px rgba(42,31,20,.5);
+}
+
+/* Terrain texture */
+.game-board::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 30% 40%, rgba(95,140,150,.4) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 60%, rgba(140,110,80,.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 30%, rgba(80,120,130,.3) 0%, transparent 35%),
+    repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,255,255,.02) 6px 7px);
+  pointer-events: none;
+}
+
+/* Fog overlay - covers areas not yet found */
+.game-fog {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(20,30,35,.3) 60%, rgba(20,30,35,.6) 100%);
+  pointer-events: none;
+  transition: opacity .8s;
+}
+
+.game-spot {
+  position: absolute;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+.game-spot::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244,214,138,.9) 0%, rgba(244,214,138,.4) 40%, transparent 70%);
+  animation: glow 2.5s ease-in-out infinite;
+}
+.game-spot::after {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(0,0,0,.5);
+}
+@keyframes glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .6; transform: scale(1.4); }
+}
+.game-spot.found {
+  cursor: default;
+  z-index: 4;
+}
+.game-spot.found::before {
+  background: radial-gradient(circle, var(--accent-2) 0%, var(--accent-2) 30%, transparent 70%);
+  animation: none;
+  opacity: .9;
+}
+.game-spot.found::after {
+  content: "✓";
+  color: var(--paper);
+  font-size: 14px;
+}
+.game-spot.found .game-label {
+  display: block;
+}
+.game-label {
+  display: none;
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  pointer-events: none;
+}
+html[lang="fa"] .game-label { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+
+.game-reveal {
+  position: absolute;
+  bottom: 16px; left: 16px; right: 16px;
+  background: rgba(241,232,214,.96);
+  backdrop-filter: blur(8px);
+  border-radius: 4px;
+  padding: 16px 20px;
+  font-family: 'Fraunces', serif;
+  display: none;
+  z-index: 6;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.game-reveal.show { display: block; animation: slideUp .4s ease; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.game-reveal .name {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+html[lang="fa"] .game-reveal .name { font-family: 'Vazirmatn', sans-serif; font-weight: 600; }
+.game-reveal .anecdote {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.4;
+}
+html[lang="fa"] .game-reveal .anecdote { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+
+/* Victory overlay */
+.game-victory {
+  position: absolute; inset: 0;
+  background: rgba(20,30,35,.9);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  z-index: 10;
+  color: var(--paper);
+  padding: 20px;
+}
+.game-victory.show { display: flex; animation: fadeIn .6s ease; }
+.game-victory .crown { font-size: 56px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.game-victory h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(28px, 5vw, 48px);
+  margin: 0 0 12px;
+  letter-spacing: -.02em;
+}
+html[lang="fa"] .game-victory h3 { font-family: 'Vazirmatn', sans-serif; font-weight: 400; }
+.game-victory p {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(241,232,214,.85);
+  margin: 0 0 24px;
+  max-width: 460px;
+}
+html[lang="fa"] .game-victory p { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+.game-restart {
+  background: transparent;
+  color: var(--paper);
+  border: 1px solid rgba(241,232,214,.5);
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  letter-spacing: .05em;
+  transition: all .2s;
+}
+html[lang="fa"] .game-restart { font-family: 'Vazirmatn', sans-serif; }
+.game-restart:hover { background: rgba(241,232,214,.15); }
+
 </style>
 
 </head>
@@ -981,6 +1237,13 @@ html[lang="fa"] .footer-mark { font-family: 'Vazirmatn', sans-serif; font-style:
       <span data-lang="en">Summary</span>
       <span data-lang="ru">Сводка</span>
       <span data-lang="fa">خلاصه</span>
+    </button>
+    <button class="tab" data-tab="game" role="tab">
+      <span class="num">VI</span>
+      <span data-lang="fr" class="active">Jeu</span>
+      <span data-lang="en">Game</span>
+      <span data-lang="ru">Игра</span>
+      <span data-lang="fa">بازی</span>
     </button>
   </nav>
   <div class="lang-wrapper">
@@ -1472,6 +1735,10 @@ html[lang="fa"] .footer-mark { font-family: 'Vazirmatn', sans-serif; font-style:
       <img src="https://images.unsplash.com/photo-1717505833620-58ef0db8a67d?w=900&q=80" alt="" />
       <div class="gallery-caption">Trek en montagne</div>
     </div>
+    <div class="gallery-item wide" data-day="5" data-caption="Sur la route">
+      <img src="https://images.unsplash.com/photo-1717506703370-57f729a71505?w=1400&q=80" alt="" />
+      <div class="gallery-caption">300 km de route, plein nord</div>
+    </div>
     <div class="gallery-item tall" data-day="6" data-caption="Patmos">
       <img src="https://images.unsplash.com/photo-1622319783997-ad933cb1a080?w=1000&q=80" alt="" />
       <div class="gallery-caption">Île de Patmos</div>
@@ -1606,6 +1873,72 @@ html[lang="fa"] .footer-mark { font-family: 'Vazirmatn', sans-serif; font-style:
   </section>
 </section>
 
+<!-- ====== TAB PANEL : GAME ====== -->
+
+<section class="tab-panel" id="panel-game">
+  <section class="game-section">
+    <div class="container">
+      <div class="section-label">
+        <span data-lang="fr" class="active">VI · Le jeu</span>
+        <span data-lang="en">VI · The game</span>
+        <span data-lang="ru">VI · Игра</span>
+        <span data-lang="fa">۶ · بازی</span>
+      </div>
+      <h2 class="section-title">
+        <span data-lang="fr" class="active">Trouve <span class="italic">les 14 lieux</span></span>
+        <span data-lang="en">Find <span class="italic">all 14 places</span></span>
+        <span data-lang="ru">Найди <span class="italic">14 мест</span></span>
+        <span data-lang="fa">پیدا کن <span class="italic">۱۴ مکان را</span></span>
+      </h2>
+
+```
+  <p class="game-intro">
+    <span data-lang="fr" class="active">Cliquez sur les points lumineux pour révéler chaque étape de notre voyage. Saurez-vous tous les trouver ?</span>
+    <span data-lang="en">Click the glowing dots to reveal each stop on our trip. Can you find them all?</span>
+    <span data-lang="ru">Нажмите на светящиеся точки, чтобы открыть каждую остановку. Сможете ли вы найти все?</span>
+    <span data-lang="fa">روی نقاط درخشان کلیک کنید تا هر توقف سفر آشکار شود. می‌توانید همه را پیدا کنید؟</span>
+  </p>
+
+  <div class="game-progress">
+    <span class="game-progress-text"><strong id="gameFound">0</strong> / 14</span>
+    <div class="game-progress-bar"><div class="game-progress-fill" id="gameProgress"></div></div>
+  </div>
+
+  <div class="game-board" id="gameBoard">
+    <div class="game-fog"></div>
+    <!-- Spots will be injected by JS -->
+    <div class="game-reveal" id="gameReveal">
+      <div class="name" id="revealName"></div>
+      <div class="anecdote" id="revealAnecdote"></div>
+    </div>
+    <div class="game-victory" id="gameVictory">
+      <div class="crown">👑</div>
+      <h3>
+        <span data-lang="fr" class="active">Bravo !</span>
+        <span data-lang="en">Bravo!</span>
+        <span data-lang="ru">Браво!</span>
+        <span data-lang="fa">آفرین!</span>
+      </h3>
+      <p>
+        <span data-lang="fr" class="active">Tu connais maintenant tout l'itinéraire de Violetta &amp; Sacha en Altaï 🏔</span>
+        <span data-lang="en">You now know Violetta &amp; Sacha's entire Altai itinerary 🏔</span>
+        <span data-lang="ru">Теперь вы знаете весь маршрут Виолетты и Саши по Алтаю 🏔</span>
+        <span data-lang="fa">حالا تمام مسیر سفر ویولتا و ساشا در آلتای را می‌دانید 🏔</span>
+      </p>
+      <button class="game-restart" id="gameRestart">
+        <span data-lang="fr" class="active">↻ Recommencer</span>
+        <span data-lang="en">↻ Play again</span>
+        <span data-lang="ru">↻ Заново</span>
+        <span data-lang="fa">↻ شروع دوباره</span>
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+  </section>
+</section>
+
 <button class="share-fab" id="shareBtn" aria-label="Partager">↗</button>
 
 <div class="share-toast" id="shareToast">
@@ -1653,14 +1986,12 @@ document.querySelectorAll('img').forEach(img => {
     panels.forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (id === 'map' && !mapInitDone) {
-      // Map needs to be init AFTER its container is visible — give it a tick
       setTimeout(() => {
         if (window._initMap) window._initMap();
         mapInitDone = true;
       }, 100);
     } else if (id === 'map' && window._mapInstance) {
-      // Force re-render
-      setTimeout(() => window._mapInstance.invalidateSize(), 100);
+      setTimeout(() => window._mapInstance.resize(), 100);
     }
   }
 
@@ -1804,56 +2135,201 @@ document.querySelectorAll('img').forEach(img => {
   });
 })();
 
-// === MAP (lazy init when tab opened) ===
+// === MAPBOX MAP (lazy init) ===
 window._initMap = function() {
-  const map = L.map('map', { scrollWheelZoom: false, zoomControl: true }).setView([51.0, 85.9], 7);
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic2FjaGFlZCIsImEiOiJjbW93dHg2eTMwZDN1MnBzZTIzcm11MmtjIn0.zUVJWQXTqIYYGGu6Z5qx0Q';
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/outdoors-v12',
+    center: [86.5, 51.0],
+    zoom: 6.2,
+    attributionControl: true,
+  });
   window._mapInstance = map;
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 18 }).addTo(map);
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
   const stops = [
-    { n: 1, name: { fr: "Gorno-Altaïsk", en: "Gorno-Altaysk", ru: "Горно-Алтайск", fa: "گورنو-آلتایسک" }, coords: [51.9586, 85.9601] },
-    { n: 1, name: { fr: "Doigt du Diable", en: "Devil's Finger", ru: "Чёртов палец", fa: "انگشت شیطان" }, coords: [51.7956, 85.7350] },
-    { n: 1, name: { fr: "Cascade Kamishlinsky", en: "Kamishlinsky", ru: "Камышлинский", fa: "کامیشلینسکی" }, coords: [51.7000, 85.7500] },
-    { n: 2, name: { fr: "Col de Seminsky", en: "Seminsky Pass", ru: "Семинский", fa: "سمینسکی" }, coords: [51.0333, 85.6000] },
-    { n: 2, name: { fr: "Arbat hôtel", en: "Arbat hotel", ru: "Арбат", fa: "آرباط" }, coords: [50.7500, 86.2000] },
-    { n: 3, name: { fr: "Col de Chike-Taman", en: "Chike-Taman", ru: "Чике-Таман", fa: "چیکه-تامان" }, coords: [50.6394, 86.3181] },
-    { n: 3, name: { fr: "Confluence Chuya+Katun", en: "Chuya+Katun confluence", ru: "Слияние", fa: "تلاقی" }, coords: [50.4067, 86.6786] },
-    { n: 3, name: { fr: "Cascade Shirlak", en: "Shirlak", ru: "Ширлак", fa: "شیرلاک" }, coords: [50.3667, 87.3000] },
-    { n: 3, name: { fr: "Green Kolobok", en: "Green Kolobok", ru: "Зелёный Колобок", fa: "گرین کولوبوک" }, coords: [50.2000, 87.5500] },
-    { n: 4, name: { fr: "Lac Geyser", en: "Geyser Lake", ru: "Гейзеровое", fa: "گیزر" }, coords: [50.2833, 87.6500] },
-    { n: 6, name: { fr: "Île de Patmos", en: "Patmos Island", ru: "Патмос", fa: "پاتموس" }, coords: [51.4097, 86.0100] },
-    { n: 6, name: { fr: "Cascade Che-Chkysh", en: "Che-Chkysh", ru: "Че-Чкыш", fa: "چه-چکیش" }, coords: [51.3500, 86.1000] },
-    { n: 6, name: { fr: "Manzherok", en: "Manzherok", ru: "Манжерок", fa: "مانژروک" }, coords: [51.8256, 85.7897] },
-    { n: 7, name: { fr: "Hôtel Lyubimiy", en: "Lyubimiy", ru: "Любимый", fa: "لیوبیمی" }, coords: [51.9600, 85.9650] },
+    { n: 1, name: { fr: "Gorno-Altaïsk", en: "Gorno-Altaysk", ru: "Горно-Алтайск", fa: "گورنو-آلتایسک" }, coords: [85.9601, 51.9586] },
+    { n: 1, name: { fr: "Doigt du Diable", en: "Devil's Finger", ru: "Чёртов палец", fa: "انگشت شیطان" }, coords: [85.7350, 51.7956] },
+    { n: 1, name: { fr: "Cascade Kamishlinsky", en: "Kamishlinsky", ru: "Камышлинский", fa: "کامیشلینسکی" }, coords: [85.7500, 51.7000] },
+    { n: 2, name: { fr: "Col de Seminsky", en: "Seminsky Pass", ru: "Семинский", fa: "سمینسکی" }, coords: [85.6000, 51.0333] },
+    { n: 2, name: { fr: "Arbat hôtel", en: "Arbat hotel", ru: "Арбат", fa: "آرباط" }, coords: [86.2000, 50.7500] },
+    { n: 3, name: { fr: "Col de Chike-Taman", en: "Chike-Taman", ru: "Чике-Таман", fa: "چیکه-تامان" }, coords: [86.3181, 50.6394] },
+    { n: 3, name: { fr: "Confluence Chuya+Katun", en: "Chuya+Katun confluence", ru: "Слияние", fa: "تلاقی" }, coords: [86.6786, 50.4067] },
+    { n: 3, name: { fr: "Cascade Shirlak", en: "Shirlak", ru: "Ширлак", fa: "شیرلاک" }, coords: [87.3000, 50.3667] },
+    { n: 3, name: { fr: "Green Kolobok", en: "Green Kolobok", ru: "Зелёный Колобок", fa: "گرین کولوبوک" }, coords: [87.5500, 50.2000] },
+    { n: 4, name: { fr: "Lac Geyser", en: "Geyser Lake", ru: "Гейзеровое", fa: "گیزر" }, coords: [87.6500, 50.2833] },
+    { n: 6, name: { fr: "Île de Patmos", en: "Patmos Island", ru: "Патмос", fa: "پاتموس" }, coords: [86.0100, 51.4097] },
+    { n: 6, name: { fr: "Cascade Che-Chkysh", en: "Che-Chkysh", ru: "Че-Чкыш", fa: "چه-چکیش" }, coords: [86.1000, 51.3500] },
+    { n: 6, name: { fr: "Manzherok", en: "Manzherok", ru: "Манжерок", fa: "مانژروک" }, coords: [85.7897, 51.8256] },
+    { n: 7, name: { fr: "Hôtel Lyubimiy", en: "Lyubimiy", ru: "Любимый", fa: "لیوبیمی" }, coords: [85.9650, 51.9600] },
   ];
 
-  function makeIcon(n) {
-    return L.divIcon({
-      className: 'custom-marker',
-      html: '<div style="width:28px;height:28px;background:#b03a2e;color:#f1e8d6;border:2px solid #f1e8d6;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:600;font-size:13px;box-shadow:0 3px 8px rgba(42,31,20,.4);">' + n + '</div>',
-      iconSize: [28, 28], iconAnchor: [14, 14],
-    });
-  }
   const dayLabels = { fr: 'Jour', en: 'Day', ru: 'День', fa: 'روز' };
-  const latlngs = [];
+
+  function buildPopupHTML(stop, lang) {
+    return '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:#8a7557;margin-bottom:4px;">' + dayLabels[lang] + ' ' + stop.n + '</div><strong>' + stop.name[lang] + '</strong>';
+  }
+
   const markers = [];
   stops.forEach(stop => {
-    const marker = L.marker(stop.coords, { icon: makeIcon(stop.n) }).addTo(map);
+    const el = document.createElement('div');
+    el.className = 'altai-marker';
+    el.textContent = stop.n;
+    const popup = new mapboxgl.Popup({ offset: 22, closeButton: true })
+      .setHTML(buildPopupHTML(stop, document.documentElement.lang || 'fr'));
+    const marker = new mapboxgl.Marker(el)
+      .setLngLat(stop.coords)
+      .setPopup(popup)
+      .addTo(map);
     marker._stopData = stop;
-    marker.bindPopup(buildPopup(stop, document.documentElement.lang || 'fr'));
+    marker._popup = popup;
     markers.push(marker);
-    latlngs.push(stop.coords);
   });
-  function buildPopup(stop, lang) {
-    return '<div style="font-family:' + (lang==='fa'?'Vazirmatn,sans-serif':'Fraunces,serif') + ';font-size:14px;' + (lang==='fa'?'direction:rtl;text-align:right;':'') + '"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:#8a7557;margin-bottom:4px;">' + dayLabels[lang] + ' ' + stop.n + '</div><strong>' + stop.name[lang] + '</strong></div>';
-  }
+
+  // Update popups on language change
   new MutationObserver(() => {
     const lang = document.documentElement.lang || 'fr';
-    markers.forEach(m => m.setPopupContent(buildPopup(m._stopData, lang)));
+    markers.forEach(m => m._popup.setHTML(buildPopupHTML(m._stopData, lang)));
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-  L.polyline(latlngs, { color: '#b03a2e', weight: 2, opacity: 0.55, dashArray: '6, 8' }).addTo(map);
-  map.fitBounds(L.latLngBounds(latlngs).pad(0.15));
+
+  // Add the dashed route polyline
+  map.on('load', () => {
+    map.addSource('route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: stops.map(s => s.coords) }
+      }
+    });
+    map.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#b03a2e',
+        'line-width': 2.5,
+        'line-opacity': 0.6,
+        'line-dasharray': [2, 2],
+      }
+    });
+
+    // Fit map to all stops
+    const bounds = new mapboxgl.LngLatBounds();
+    stops.forEach(s => bounds.extend(s.coords));
+    map.fitBounds(bounds, { padding: 60, duration: 0 });
+  });
 };
+
+// === TREASURE GAME ===
+(function() {
+  const board = document.getElementById('gameBoard');
+  if (!board) return;
+  const reveal = document.getElementById('gameReveal');
+  const revealName = document.getElementById('revealName');
+  const revealAnecdote = document.getElementById('revealAnecdote');
+  const victory = document.getElementById('gameVictory');
+  const restart = document.getElementById('gameRestart');
+  const found = document.getElementById('gameFound');
+  const progress = document.getElementById('gameProgress');
+
+  // 14 spots positioned approximately following the actual route geography
+  // x and y are percentages of the board (0-100)
+  // Day 1 starts north (top), trip goes south-east, then back north
+  const spots = [
+    { x: 18, y: 12, label: { fr: "Gorno-Altaïsk", en: "Gorno-Altaysk", ru: "Горно-Алтайск", fa: "گورنو-آلتایسک" },
+      story: { fr: "Capitale de la République de l'Altaï · point d'arrivée du voyage.", en: "Capital of Altai Republic · arrival city.", ru: "Столица Республики Алтай · точка прибытия.", fa: "پایتخت جمهوری آلتای · نقطه ورود." } },
+    { x: 14, y: 20, label: { fr: "Doigt du Diable", en: "Devil's Finger", ru: "Чёртов палец", fa: "انگشت شیطان" },
+      story: { fr: "Rocher pointu surplombant la rivière Katun · vue spectaculaire.", en: "Pointed rock above the Katun river · spectacular view.", ru: "Скала над рекой Катунь · захватывающий вид.", fa: "صخره‌ی نوک‌تیز بر فراز رود کاتون." } },
+    { x: 17, y: 25, label: { fr: "Cascade Kamishlinsky", en: "Kamishlinsky", ru: "Камышлинский водопад", fa: "آبشار کامیشلینسکی" },
+      story: { fr: "Une heure de marche dans la forêt pour atteindre une cascade de 12 m.", en: "An hour's walk through the forest to a 12 m waterfall.", ru: "Час ходьбы по лесу до 12-метрового водопада.", fa: "یک ساعت پیاده‌روی در جنگل تا آبشاری ۱۲ متری." } },
+    { x: 22, y: 38, label: { fr: "Col de Seminsky", en: "Seminsky Pass", ru: "Семинский перевал", fa: "گردنه سمینسکی" },
+      story: { fr: "1 717 m d'altitude · parfois encore enneigé en mai.", en: "1 717 m high · sometimes still snowy in May.", ru: "1 717 м · иногда ещё снег в мае.", fa: "۱۷۱۷ متر ارتفاع · گاهی هنوز برفی در می." } },
+    { x: 32, y: 47, label: { fr: "Hôtel Arbat", en: "Arbat hotel", ru: "Отель Арбат", fa: "هتل آرباط" },
+      story: { fr: "Étape pour la nuit · à payer en espèces !", en: "Overnight stop · cash payment only!", ru: "Ночёвка · оплата наличными!", fa: "اقامت شبانه · پرداخت نقدی!" } },
+    { x: 41, y: 55, label: { fr: "Col Chike-Taman", en: "Chike-Taman Pass", ru: "Чике-Таман", fa: "چیکه-تامان" },
+      story: { fr: "1 460 m · route en lacets vertigineuse, vue à 360°.", en: "1 460 m · dizzying switchbacks, 360° view.", ru: "1 460 м · головокружительные серпантины.", fa: "۱۴۶۰ متر · پیچ‌وخم‌های سرگیجه‌آور." } },
+    { x: 53, y: 64, label: { fr: "Confluence Chuya/Katun", en: "Chuya/Katun confluence", ru: "Слияние Чуи и Катуни", fa: "تلاقی چویا و کاتون" },
+      story: { fr: "Le clou du voyage · deux rivières se rencontrent sans se mélanger.", en: "Highlight of the trip · two rivers meet without mixing.", ru: "Главное место · две реки встречаются, не смешиваясь.", fa: "اوج سفر · دو رود بی‌آنکه درآمیزند." } },
+    { x: 67, y: 70, label: { fr: "Cascade Shirlak", en: "Shirlak", ru: "Ширлак", fa: "شیرلاک" },
+      story: { fr: "Cascade visible depuis la route · idéale pour une photo.", en: "Waterfall visible from the road · perfect photo stop.", ru: "Водопад с дороги · идеальное место для фото.", fa: "آبشاری از جاده · محل عالی برای عکس." } },
+    { x: 72, y: 76, label: { fr: "Green Kolobok", en: "Green Kolobok", ru: "Зелёный Колобок", fa: "گرین کولوبوک" },
+      story: { fr: "Camp de base pour deux nuits · au cœur de la vallée.", en: "Base camp for two nights · in the heart of the valley.", ru: "Лагерь на две ночи · в сердце долины.", fa: "اردوگاه برای دو شب · در قلب دره." } },
+    { x: 76, y: 73, label: { fr: "Lac Geyser", en: "Geyser Lake", ru: "Гейзеровое озеро", fa: "دریاچه گیزر" },
+      story: { fr: "Petits cercles bleus dessinés au fond du lac par des sources souterraines.", en: "Small blue circles drawn at the bottom by underwater springs.", ru: "Синие круги на дне озера от подводных источников.", fa: "دایره‌های آبی از چشمه‌های زیرآبی." } },
+    { x: 21, y: 27, label: { fr: "Île de Patmos", en: "Patmos Island", ru: "Остров Патмос", fa: "جزیره پاتموس" },
+      story: { fr: "Petite île reliée par un pont suspendu · monastère orthodoxe.", en: "Tiny island linked by a suspension bridge · Orthodox monastery.", ru: "Маленький остров с подвесным мостом · монастырь.", fa: "جزیره‌ای با پل معلق · صومعه‌ی ارتدوکس." } },
+    { x: 24, y: 24, label: { fr: "Che-Chkysh", en: "Che-Chkysh", ru: "Че-Чкыш", fa: "چه-چکیش" },
+      story: { fr: "Gorge étroite avec cascade · 1 km de marche dans un canyon.", en: "Narrow gorge with waterfall · 1 km canyon walk.", ru: "Узкое ущелье с водопадом · 1 км ходьбы.", fa: "دره‌ای باریک با آبشار · ۱ کیلومتر پیاده‌روی." } },
+    { x: 16, y: 17, label: { fr: "Manzherok", en: "Manzherok", ru: "Манжерок", fa: "مانژروک" },
+      story: { fr: "Station thermale et lac · télésiège vers le sommet.", en: "Spa village and lake · chairlift to the summit.", ru: "Курорт и озеро · подъёмник на вершину.", fa: "آبگرم و دریاچه · تله‌سی‌یژ به قله." } },
+    { x: 19, y: 13, label: { fr: "Hôtel Lyubimiy", en: "Lyubimiy hotel", ru: "Отель Любимый", fa: "هتل لیوبیمی" },
+      story: { fr: "Dernière nuit avant l'envol · à 5 min de l'aéroport.", en: "Last night before take-off · 5 min from airport.", ru: "Последняя ночь · в 5 мин от аэропорта.", fa: "آخرین شب · ۵ دقیقه تا فرودگاه." } },
+  ];
+
+  let foundCount = 0;
+  const total = spots.length;
+
+  function render() {
+    // Remove existing spots
+    board.querySelectorAll('.game-spot').forEach(el => el.remove());
+    foundCount = 0;
+    found.textContent = '0';
+    progress.style.width = '0%';
+    victory.classList.remove('show');
+    reveal.classList.remove('show');
+
+    spots.forEach((spot, i) => {
+      const el = document.createElement('div');
+      el.className = 'game-spot';
+      el.style.left = spot.x + '%';
+      el.style.top = spot.y + '%';
+
+      const labelEl = document.createElement('div');
+      labelEl.className = 'game-label';
+      const lang = document.documentElement.lang || 'fr';
+      labelEl.textContent = spot.label[lang];
+      labelEl._spot = spot;
+      el.appendChild(labelEl);
+
+      el.addEventListener('click', () => {
+        if (el.classList.contains('found')) return;
+        el.classList.add('found');
+        foundCount++;
+        found.textContent = foundCount;
+        progress.style.width = (foundCount / total * 100) + '%';
+
+        const lang = document.documentElement.lang || 'fr';
+        revealName.textContent = spot.label[lang];
+        revealAnecdote.textContent = spot.story[lang];
+        reveal.classList.add('show');
+
+        clearTimeout(window._revealTimer);
+        window._revealTimer = setTimeout(() => reveal.classList.remove('show'), 4000);
+
+        if (foundCount === total) {
+          setTimeout(() => victory.classList.add('show'), 800);
+        }
+      });
+
+      board.appendChild(el);
+    });
+  }
+
+  render();
+  restart.addEventListener('click', render);
+
+  // Update labels on language change
+  new MutationObserver(() => {
+    const lang = document.documentElement.lang || 'fr';
+    board.querySelectorAll('.game-label').forEach(l => {
+      if (l._spot && l._spot.label[lang]) l.textContent = l._spot.label[lang];
+    });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+})();
 </script>
 
 </body>
