@@ -826,6 +826,239 @@ footer .footer-mark {
 .hero-sub-immersive { animation-delay: .8s; }
 
 [data-lang]:not(.active) { display: none; }
+
+/* ===== COUNTDOWN ===== */
+.countdown-section {
+  padding: 60px 0 30px;
+  text-align: center;
+  position: relative; z-index: 2;
+}
+.countdown-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .35em;
+  color: var(--ink-faint);
+  margin-bottom: 18px;
+}
+html[lang="fa"] .countdown-label { font-family: 'Vazirmatn', sans-serif; text-transform: none; letter-spacing: .05em; font-size: 13px; }
+.countdown-display {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  letter-spacing: -.04em;
+  line-height: 1;
+}
+html[lang="fa"] .countdown-display { font-family: 'Vazirmatn', sans-serif; font-weight: 400; }
+.countdown-display .big {
+  font-size: clamp(80px, 14vw, 160px);
+  display: inline-block;
+  color: var(--accent);
+  position: relative;
+}
+.countdown-display .unit {
+  font-size: clamp(20px, 3vw, 32px);
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-left: 12px;
+  font-weight: 400;
+}
+html[dir="rtl"] .countdown-display .unit { margin-left: 0; margin-right: 12px; }
+.countdown-sub {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--ink-soft);
+  margin-top: 14px;
+}
+html[lang="fa"] .countdown-sub { font-family: 'Vazirmatn', sans-serif; font-style: normal; }
+.countdown-display .dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-left: 12px;
+  vertical-align: super;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.6); }
+}
+
+/* ===== WEATHER & PACKING ===== */
+.weather-section {
+  padding: 80px 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(63, 107, 79, .06) 50%, transparent 100%);
+}
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .weather-grid { grid-template-columns: 1fr; gap: 24px; }
+}
+.weather-info {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent-3);
+  padding: 32px;
+}
+.weather-info h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 24px;
+  margin: 0 0 12px;
+  letter-spacing: -.01em;
+}
+html[lang="fa"] .weather-info h3 { font-family: 'Vazirmatn', sans-serif; font-weight: 600; }
+.weather-info .lead {
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-bottom: 22px;
+  font-size: 16px;
+}
+html[lang="fa"] .weather-info .lead { font-style: normal; }
+.weather-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.weather-stat {
+  text-align: center;
+  padding: 14px 8px;
+  border: 1px dashed var(--rule);
+  border-radius: 4px;
+}
+.weather-stat .icon { font-size: 24px; margin-bottom: 6px; }
+.weather-stat .val {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+.weather-stat .lbl {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: var(--ink-faint);
+  margin-top: 4px;
+}
+html[lang="fa"] .weather-stat .lbl { font-family: 'Vazirmatn', sans-serif; text-transform: none; letter-spacing: 0; font-size: 12px; }
+.weather-tip {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+  padding: 14px 18px;
+  background: rgba(176,58,46,.06);
+  border-left: 3px solid var(--accent);
+  line-height: 1.5;
+}
+html[lang="fa"] .weather-tip { font-style: normal; }
+html[dir="rtl"] .weather-tip { border-left: none; border-right: 3px solid var(--accent); }
+.packing-list {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 32px;
+}
+.packing-list h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 24px;
+  margin: 0 0 18px;
+}
+html[lang="fa"] .packing-list h3 { font-family: 'Vazirmatn', sans-serif; font-weight: 600; }
+.packing-list ul { list-style: none; padding: 0; margin: 0; }
+.packing-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dotted var(--rule);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: opacity .2s;
+}
+html[lang="fa"] .packing-list li { font-family: 'Vazirmatn', sans-serif; }
+.packing-list li:last-child { border-bottom: none; }
+.packing-list li:hover { opacity: .7; }
+.packing-check {
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--ink-faint);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  position: relative;
+  transition: all .2s;
+}
+.packing-list li.checked .packing-check {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+.packing-list li.checked .packing-check::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+}
+.packing-list li.checked .packing-text {
+  text-decoration: line-through;
+  color: var(--ink-faint);
+}
+
+/* ===== SHARE BUTTON ===== */
+.share-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -4px rgba(42,31,20,.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  transition: all .25s;
+}
+.share-fab:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: var(--accent);
+  box-shadow: 0 12px 32px -4px rgba(176,58,46,.5);
+}
+html[dir="rtl"] .share-fab { right: auto; left: 24px; }
+.share-toast {
+  position: fixed;
+  bottom: 92px;
+  right: 24px;
+  z-index: 51;
+  background: var(--accent-2);
+  color: var(--paper);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  box-shadow: 0 8px 24px -4px rgba(63,107,79,.5);
+}
+.share-toast.show { opacity: 1; transform: translateY(0); }
+html[dir="rtl"] .share-toast { right: auto; left: 24px; }
+html[lang="fa"] .share-toast { font-family: 'Vazirmatn', sans-serif; }
 </style>
 
 </head>
@@ -841,6 +1074,7 @@ footer .footer-mark {
   <nav>
     <ul class="nav-links">
       <li><a href="#journey"><span data-lang="fr" class="active">Le voyage</span><span data-lang="en">The journey</span><span data-lang="ru">Путешествие</span><span data-lang="fa">سفر</span></a></li>
+      <li><a href="#weather"><span data-lang="fr" class="active">Préparation</span><span data-lang="en">Prep</span><span data-lang="ru">Сборы</span><span data-lang="fa">آمادگی</span></a></li>
       <li><a href="#gallery"><span data-lang="fr" class="active">Galerie</span><span data-lang="en">Gallery</span><span data-lang="ru">Галерея</span><span data-lang="fa">گالری</span></a></li>
       <li><a href="#map-section"><span data-lang="fr" class="active">Carte</span><span data-lang="en">Map</span><span data-lang="ru">Карта</span><span data-lang="fa">نقشه</span></a></li>
       <li><a href="#recap"><span data-lang="fr" class="active">Récap</span><span data-lang="en">Summary</span><span data-lang="ru">Сводка</span><span data-lang="fa">خلاصه</span></a></li>
@@ -911,6 +1145,32 @@ footer .footer-mark {
     <div>
       <div class="label"><span data-lang="fr" class="active">Budget</span><span data-lang="en">Budget</span><span data-lang="ru">Бюджет</span><span data-lang="fa">بودجه</span></div>
       <div class="value">128 800<small>₽</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="countdown-section">
+  <div class="container">
+    <div class="countdown-label" id="countdown-label">
+      <span data-lang="fr" class="active">Avant le grand départ</span>
+      <span data-lang="en">Before the big departure</span>
+      <span data-lang="ru">До большого отъезда</span>
+      <span data-lang="fa">پیش از عزیمت</span>
+    </div>
+    <div class="countdown-display">
+      <span class="big" id="countdown-num">—<span class="dot"></span></span>
+      <span class="unit" id="countdown-unit">
+        <span data-lang="fr" class="active">jours</span>
+        <span data-lang="en">days</span>
+        <span data-lang="ru">дней</span>
+        <span data-lang="fa">روز</span>
+      </span>
+    </div>
+    <div class="countdown-sub" id="countdown-sub">
+      <span data-lang="fr" class="active">Décollage le 13 mai 2026</span>
+      <span data-lang="en">Take-off May 13, 2026</span>
+      <span data-lang="ru">Вылет 13 мая 2026</span>
+      <span data-lang="fa">پرواز در ۱۳ می ۲۰۲۶</span>
     </div>
   </div>
 </section>
@@ -1098,11 +1358,113 @@ footer .footer-mark {
   </div>
 </section>
 
+<!-- WEATHER & PACKING -->
+
+<section class="weather-section" id="weather">
+  <div class="container">
+    <div class="section-label">
+      <span data-lang="fr" class="active">II · Préparation</span>
+      <span data-lang="en">II · Preparation</span>
+      <span data-lang="ru">II · Подготовка</span>
+      <span data-lang="fa">۲ · آمادگی</span>
+    </div>
+    <h2 class="section-title">
+      <span data-lang="fr" class="active">Mai en Altaï, <span class="italic">à quoi s'attendre</span></span>
+      <span data-lang="en">May in Altai, <span class="italic">what to expect</span></span>
+      <span data-lang="ru">Май в Алтае, <span class="italic">что ожидать</span></span>
+      <span data-lang="fa">می در آلتای، <span class="italic">چه انتظاری داشت</span></span>
+    </h2>
+
+```
+<div class="weather-grid">
+  <div class="weather-info">
+    <h3>
+      <span data-lang="fr" class="active">Le climat début mai</span>
+      <span data-lang="en">Climate in early May</span>
+      <span data-lang="ru">Погода в начале мая</span>
+      <span data-lang="fa">آب‌وهوای ابتدای می</span>
+    </h3>
+    <p class="lead">
+      <span data-lang="fr" class="active">Le printemps arrive tard en Sibérie. Encore frais, parfois neige en altitude, mais lumière magnifique.</span>
+      <span data-lang="en">Spring arrives late in Siberia. Still cold, sometimes snow at altitude, but magnificent light.</span>
+      <span data-lang="ru">Весна приходит поздно в Сибирь. Еще холодно, иногда снег в горах, но красивый свет.</span>
+      <span data-lang="fa">بهار دیر به سیبری می‌آید. هنوز سرد است، گاهی برف در ارتفاعات، اما نور زیبا.</span>
+    </p>
+
+    <div class="weather-stats">
+      <div class="weather-stat">
+        <div class="icon">🌡</div>
+        <div class="val">5–15°C</div>
+        <div class="lbl">
+          <span data-lang="fr" class="active">Vallée</span>
+          <span data-lang="en">Valley</span>
+          <span data-lang="ru">Долина</span>
+          <span data-lang="fa">دره</span>
+        </div>
+      </div>
+      <div class="weather-stat">
+        <div class="icon">❄</div>
+        <div class="val">−5–5°C</div>
+        <div class="lbl">
+          <span data-lang="fr" class="active">Cols</span>
+          <span data-lang="en">Passes</span>
+          <span data-lang="ru">Перевалы</span>
+          <span data-lang="fa">گردنه‌ها</span>
+        </div>
+      </div>
+      <div class="weather-stat">
+        <div class="icon">☀</div>
+        <div class="val">14h</div>
+        <div class="lbl">
+          <span data-lang="fr" class="active">Soleil</span>
+          <span data-lang="en">Daylight</span>
+          <span data-lang="ru">Свет</span>
+          <span data-lang="fa">روز</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="weather-tip">
+      <span data-lang="fr" class="active">⚠ Au col de Seminsky (1 717 m) et Chike-Taman (1 460 m) : prévoir vêtements chauds, neige possible même en mai. Les rivières sont en crue de printemps — eaux puissantes.</span>
+      <span data-lang="en">⚠ At Seminsky Pass (1 717 m) and Chike-Taman (1 460 m): bring warm clothes, snow possible even in May. Rivers in spring flood — powerful waters.</span>
+      <span data-lang="ru">⚠ На Семинском (1 717 м) и Чике-Тамане (1 460 м) перевалах: тёплая одежда, возможен снег даже в мае. Реки в весеннем половодье.</span>
+      <span data-lang="fa">⚠ در گردنه‌های سمینسکی (۱۷۱۷ متر) و چیکه-تامان (۱۴۶۰ متر): لباس گرم، احتمال برف. رودخانه‌ها در طغیان بهاری.</span>
+    </div>
+  </div>
+
+  <div class="packing-list">
+    <h3>
+      <span data-lang="fr" class="active">À ne pas oublier</span>
+      <span data-lang="en">Don't forget</span>
+      <span data-lang="ru">Не забыть</span>
+      <span data-lang="fa">فراموش نکنیم</span>
+    </h3>
+    <ul id="packingList">
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Doudoune chaude + polaire</span><span data-lang="en">Warm down jacket + fleece</span><span data-lang="ru">Тёплая куртка + флис</span><span data-lang="fa">کاپشن گرم + پولار</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Veste imperméable</span><span data-lang="en">Waterproof jacket</span><span data-lang="ru">Дождевик</span><span data-lang="fa">کاپشن ضدآب</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Chaussures de rando montantes</span><span data-lang="en">Hiking boots</span><span data-lang="ru">Треккинговые ботинки</span><span data-lang="fa">کفش کوهنوردی</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Bonnet, gants, écharpe</span><span data-lang="en">Hat, gloves, scarf</span><span data-lang="ru">Шапка, перчатки, шарф</span><span data-lang="fa">کلاه، دستکش، شال</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Lunettes de soleil + crème solaire</span><span data-lang="en">Sunglasses + sunscreen</span><span data-lang="ru">Очки + крем от солнца</span><span data-lang="fa">عینک آفتابی + ضدآفتاب</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Trousse de secours basique</span><span data-lang="en">Basic first-aid kit</span><span data-lang="ru">Аптечка</span><span data-lang="fa">جعبه کمک‌های اولیه</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Espèces ₽ (peu de CB en montagne)</span><span data-lang="en">Cash ₽ (few cards in mountains)</span><span data-lang="ru">Наличные ₽ (карты редко)</span><span data-lang="fa">پول نقد ₽</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Adaptateur prise type C/F</span><span data-lang="en">Plug adapter type C/F</span><span data-lang="ru">Переходник C/F</span><span data-lang="fa">مبدل برق C/F</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Powerbank pour la voiture</span><span data-lang="en">Powerbank for the car</span><span data-lang="ru">Внешний аккумулятор</span><span data-lang="fa">پاوربانک</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Carte SIM russe ou eSIM</span><span data-lang="en">Russian SIM or eSIM</span><span data-lang="ru">Российская SIM</span><span data-lang="fa">سیم‌کارت روسی</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Cartes hors-ligne (Maps.me)</span><span data-lang="en">Offline maps (Maps.me)</span><span data-lang="ru">Офлайн-карты</span><span data-lang="fa">نقشه آفلاین</span></span></li>
+      <li><span class="packing-check"></span><span class="packing-text"><span data-lang="fr" class="active">Passeport + assurance voyage</span><span data-lang="en">Passport + travel insurance</span><span data-lang="ru">Паспорт + страховка</span><span data-lang="fa">گذرنامه + بیمه</span></span></li>
+    </ul>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
 <!-- GALLERY -->
 
 <section class="gallery-section" id="gallery">
   <div class="container">
-    <div class="section-label"><span data-lang="fr" class="active">II · Galerie</span><span data-lang="en">II · Gallery</span><span data-lang="ru">II · Галерея</span><span data-lang="fa">۲ · گالری</span></div>
+    <div class="section-label"><span data-lang="fr" class="active">III · Galerie</span><span data-lang="en">III · Gallery</span><span data-lang="ru">III · Галерея</span><span data-lang="fa">۳ · گالری</span></div>
     <h2 class="section-title">
       <span data-lang="fr" class="active">L'Altaï <span class="italic">en images</span></span>
       <span data-lang="en">Altai <span class="italic">in pictures</span></span>
@@ -1197,7 +1559,7 @@ footer .footer-mark {
 
 <section class="map-section" id="map-section">
   <div class="container">
-    <div class="section-label"><span data-lang="fr" class="active">III · La carte</span><span data-lang="en">III · The map</span><span data-lang="ru">III · Карта</span><span data-lang="fa">۳ · نقشه</span></div>
+    <div class="section-label"><span data-lang="fr" class="active">IV · La carte</span><span data-lang="en">IV · The map</span><span data-lang="ru">IV · Карта</span><span data-lang="fa">۴ · نقشه</span></div>
     <h2 class="section-title">
       <span data-lang="fr" class="active">L'itinéraire <span class="italic">en un regard</span></span>
       <span data-lang="en">The route <span class="italic">at a glance</span></span>
@@ -1216,7 +1578,7 @@ footer .footer-mark {
 
 <section class="budget-section" id="budget">
   <div class="container">
-    <div class="section-label"><span data-lang="fr" class="active">IV · Le budget</span><span data-lang="en">IV · The budget</span><span data-lang="ru">IV · Бюджет</span><span data-lang="fa">۴ · بودجه</span></div>
+    <div class="section-label"><span data-lang="fr" class="active">V · Le budget</span><span data-lang="en">V · The budget</span><span data-lang="ru">V · Бюджет</span><span data-lang="fa">۵ · بودجه</span></div>
     <h2 class="section-title">
       <span data-lang="fr" class="active">Combien ça coûte, <span class="italic">au juste ?</span></span>
       <span data-lang="en">How much does it <span class="italic">actually cost?</span></span>
@@ -1260,7 +1622,7 @@ footer .footer-mark {
 
 <section class="recap-section" id="recap">
   <div class="container">
-    <div class="section-label"><span data-lang="fr" class="active">V · Récap</span><span data-lang="en">V · Summary</span><span data-lang="ru">V · Сводка</span><span data-lang="fa">۵ · خلاصه</span></div>
+    <div class="section-label"><span data-lang="fr" class="active">VI · Récap</span><span data-lang="en">VI · Summary</span><span data-lang="ru">VI · Сводка</span><span data-lang="fa">۶ · خلاصه</span></div>
     <h2 class="section-title">
       <span data-lang="fr" class="active">Tout en un <span class="italic">tableau</span></span>
       <span data-lang="en">All in <span class="italic">one table</span></span>
@@ -1299,6 +1661,15 @@ footer .footer-mark {
   </div>
 </section>
 
+<button class="share-fab" id="shareBtn" aria-label="Partager">↗</button>
+
+<div class="share-toast" id="shareToast">
+  <span data-lang="fr" class="active">Lien copié ✓</span>
+  <span data-lang="en">Link copied ✓</span>
+  <span data-lang="ru">Ссылка скопирована ✓</span>
+  <span data-lang="fa">لینک کپی شد ✓</span>
+</div>
+
 <footer>
   <div class="footer-mark">Altaï · 13 → 20 · 05 · 2026</div>
   <div>
@@ -1308,6 +1679,131 @@ footer .footer-mark {
     <span data-lang="fa">ساخته شده با <span class="heart">♥</span></span>
   </div>
 </footer>
+
+<script>
+// === COUNTDOWN ===
+(function() {
+  const num = document.getElementById('countdown-num');
+  const unit = document.getElementById('countdown-unit');
+  const sub = document.getElementById('countdown-sub');
+  const label = document.getElementById('countdown-label');
+
+  // Trip dates: depart May 13, 2026 — return May 20, 2026
+  const TRIP_START = new Date('2026-05-13T00:00:00');
+  const TRIP_END = new Date('2026-05-20T23:59:59');
+
+  function update() {
+    const now = new Date();
+    const lang = document.documentElement.lang || 'fr';
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    if (now < TRIP_START) {
+      // Avant le départ
+      const diff = Math.ceil((TRIP_START - now) / msPerDay);
+      num.innerHTML = 'J−' + diff + '<span class="dot"></span>';
+    } else if (now <= TRIP_END) {
+      // Pendant le voyage
+      const dayNum = Math.floor((now - TRIP_START) / msPerDay) + 1;
+      num.innerHTML = dayNum + '/8<span class="dot"></span>';
+      const labels = {
+        fr: 'En cours · jour',
+        en: 'In progress · day',
+        ru: 'В пути · день',
+        fa: 'در سفر · روز'
+      };
+      const subs = {
+        fr: "Quelque part en Altaï 🏔",
+        en: "Somewhere in Altai 🏔",
+        ru: "Где-то в Алтае 🏔",
+        fa: "جایی در آلتای 🏔"
+      };
+      label.querySelectorAll('[data-lang]').forEach(el => {
+        if (labels[el.dataset.lang]) el.textContent = labels[el.dataset.lang];
+      });
+      sub.querySelectorAll('[data-lang]').forEach(el => {
+        if (subs[el.dataset.lang]) el.textContent = subs[el.dataset.lang];
+      });
+    } else {
+      // Après le voyage
+      num.innerHTML = '✓';
+      const labels = {
+        fr: "Souvenir d'Altaï",
+        en: "Altai memories",
+        ru: "Воспоминания об Алтае",
+        fa: "خاطرات آلتای"
+      };
+      const units = { fr: '2026', en: '2026', ru: '2026', fa: '۲۰۲۶' };
+      label.querySelectorAll('[data-lang]').forEach(el => {
+        if (labels[el.dataset.lang]) el.textContent = labels[el.dataset.lang];
+      });
+      unit.querySelectorAll('[data-lang]').forEach(el => {
+        if (units[el.dataset.lang]) el.textContent = units[el.dataset.lang];
+      });
+    }
+  }
+  update();
+  // Refresh on language change
+  new MutationObserver(update).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+})();
+
+// === PACKING CHECKLIST (with localStorage persistence) ===
+(function() {
+  const list = document.getElementById('packingList');
+  if (!list) return;
+
+  // Try to restore checked items
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('altai-packing') || '[]');
+  } catch(e) {}
+
+  const items = list.querySelectorAll('li');
+  items.forEach((li, i) => {
+    if (saved.includes(i)) li.classList.add('checked');
+    li.addEventListener('click', () => {
+      li.classList.toggle('checked');
+      // Save
+      const checked = [];
+      items.forEach((x, j) => { if (x.classList.contains('checked')) checked.push(j); });
+      try { localStorage.setItem('altai-packing', JSON.stringify(checked)); } catch(e) {}
+    });
+  });
+})();
+
+// === SHARE BUTTON ===
+(function() {
+  const btn = document.getElementById('shareBtn');
+  const toast = document.getElementById('shareToast');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const url = window.location.href;
+    const lang = document.documentElement.lang || 'fr';
+    const titles = {
+      fr: 'Altaï · carnet de route',
+      en: 'Altai · road journal',
+      ru: 'Алтай · путевой дневник',
+      fa: 'آلتای · دفترچه سفر'
+    };
+    // Try Web Share API first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: titles[lang], url: url });
+        return;
+      } catch(e) { /* User cancelled */ }
+    }
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    } catch(e) {
+      // Last resort: show URL
+      prompt('Copiez le lien :', url);
+    }
+  });
+})();
+</script>
 
 <script>
 // Image fade-in
